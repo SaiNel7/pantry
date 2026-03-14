@@ -9,6 +9,33 @@ const execFileAsync = promisify(execFile);
 const app = express();
 app.use(express.json());
 
+// Concurrency limiter — whisper is CPU/memory intensive; run one job at a time
+let activeJobs = 0;
+const MAX_CONCURRENT = 1;
+const jobQueue = [];
+
+function acquireSlot() {
+  return new Promise((resolve) => {
+    const tryAcquire = () => {
+      if (activeJobs < MAX_CONCURRENT) {
+        activeJobs++;
+        resolve();
+      } else {
+        jobQueue.push(tryAcquire);
+      }
+    };
+    tryAcquire();
+  });
+}
+
+function releaseSlot() {
+  activeJobs--;
+  if (jobQueue.length > 0) {
+    const next = jobQueue.shift();
+    next();
+  }
+}
+
 // Auth middleware
 app.use((req, res, next) => {
   if (req.path === '/health') return next();
@@ -34,11 +61,13 @@ app.post('/extract', async (req, res) => {
   const audioPath = path.join('/tmp', `${id}.mp3`);
   const transcriptPath = path.join('/tmp', `${id}.txt`);
 
+  await acquireSlot();
   try {
     // Step 1: Download video
+    // Use flexible format selection: prefer mp4, fall back to best available (needed for Instagram)
     await execFileAsync(
       'yt-dlp',
-      ['--output', videoPath, '--format', 'mp4', url],
+      ['--output', videoPath, '--format', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4/best', '--merge-output-format', 'mp4', url],
       { timeout: 30000 }
     );
 
@@ -48,6 +77,12 @@ app.post('/extract', async (req, res) => {
       ['-i', videoPath, '-q:a', '0', '-map', 'a', audioPath, '-y'],
       { timeout: 15000 }
     );
+
+    // Verify audio file has content before transcribing
+    const audioStat = await fs.stat(audioPath);
+    if (audioStat.size < 1000) {
+      throw new Error('Audio extraction produced no content — video may have no audio track');
+    }
 
     // Step 3: Transcribe (whisper-ctranslate2 is a drop-in CLI, no torch required)
     // initial_prompt gives Whisper culinary context to improve ingredient name accuracy
@@ -60,7 +95,7 @@ app.post('/extract', async (req, res) => {
         '--output_dir', '/tmp',
         '--initial_prompt', 'Cooking recipe video. Ingredients, measurements, and cooking instructions.',
       ],
-      { timeout: 30000 }
+      { timeout: 60000 }
     );
 
     // Read transcript (whisper names the output file after the input basename)
@@ -84,6 +119,7 @@ app.post('/extract', async (req, res) => {
     const message = err.stderr || err.message || 'Pipeline failed';
     res.status(500).json({ error: message });
   } finally {
+    releaseSlot();
     // Cleanup temp files regardless of success or failure
     await Promise.allSettled([
       fs.unlink(videoPath),
