@@ -12,10 +12,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Python dependencies — install torch from PyTorch CPU index separately
-# to avoid overriding PyPI for yt-dlp and openai-whisper
-RUN pip install --no-cache-dir yt-dlp openai-whisper
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+# Python dependencies — whisper-ctranslate2 uses CTranslate2 (not torch), ~100MB vs ~3GB
+RUN pip install --no-cache-dir yt-dlp whisper-ctranslate2
 
 WORKDIR /app
 COPY package.json .

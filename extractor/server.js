@@ -49,9 +49,9 @@ app.post('/extract', async (req, res) => {
       { timeout: 15000 }
     );
 
-    // Step 3: Transcribe
+    // Step 3: Transcribe (whisper-ctranslate2 is a drop-in CLI, no torch required)
     await execFileAsync(
-      'whisper',
+      'whisper-ctranslate2',
       [audioPath, '--model', 'base', '--output_format', 'txt', '--output_dir', '/tmp'],
       { timeout: 30000 }
     );
