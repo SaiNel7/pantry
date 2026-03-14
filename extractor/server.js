@@ -50,9 +50,16 @@ app.post('/extract', async (req, res) => {
     );
 
     // Step 3: Transcribe (whisper-ctranslate2 is a drop-in CLI, no torch required)
+    // initial_prompt gives Whisper culinary context to improve ingredient name accuracy
     await execFileAsync(
       'whisper-ctranslate2',
-      [audioPath, '--model', 'base', '--output_format', 'txt', '--output_dir', '/tmp'],
+      [
+        audioPath,
+        '--model', 'base',
+        '--output_format', 'txt',
+        '--output_dir', '/tmp',
+        '--initial_prompt', 'Cooking recipe video. Ingredients, measurements, and cooking instructions.',
+      ],
       { timeout: 30000 }
     );
 
