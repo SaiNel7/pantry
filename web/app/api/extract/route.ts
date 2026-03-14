@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractTranscript } from "@/lib/extractor";
 import { extractRecipe } from "@/lib/claude";
 
+export const maxDuration = 60; // seconds — required for Vercel hobby tier (max 60s)
+
 export async function POST(req: NextRequest) {
   try {
     const { url } = await req.json();
