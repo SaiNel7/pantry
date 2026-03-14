@@ -218,36 +218,35 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: organic illustration + floating card */}
-          <div className="relative hidden lg:flex items-center justify-center">
-            {/* Organic blob */}
-            <div
-              className="relative w-[400px] h-[400px] bg-gradient-to-br from-forest-pale to-sage-pale flex items-center justify-center"
-              style={{ borderRadius: "62% 38% 46% 54% / 60% 44% 56% 40%" }}
-            >
-              {/* Herb / botanical SVG inside blob */}
-              <svg viewBox="0 0 200 200" fill="none" className="w-56 h-56" aria-hidden="true">
-                <circle cx="100" cy="100" r="90" fill="#2D6A4F" opacity="0.06" />
-                {/* Sprig 1 */}
-                <path d="M100 160 C100 160 100 100 100 60" stroke="#2D6A4F" strokeWidth="2.5" strokeLinecap="round" opacity="0.5" />
-                <ellipse cx="85" cy="100" rx="20" ry="10" fill="#2D6A4F" opacity="0.25" transform="rotate(-40 85 100)" />
-                <ellipse cx="116" cy="115" rx="20" ry="10" fill="#2D6A4F" opacity="0.22" transform="rotate(40 116 115)" />
-                <ellipse cx="88" cy="78" rx="16" ry="9" fill="#74A97A" opacity="0.30" transform="rotate(-30 88 78)" />
-                <ellipse cx="112" cy="88" rx="16" ry="9" fill="#74A97A" opacity="0.28" transform="rotate(30 112 88)" />
-                <ellipse cx="98" cy="62" rx="14" ry="8" fill="#2D6A4F" opacity="0.25" transform="rotate(-10 98 62)" />
-                {/* Sprig 2 */}
-                <path d="M60 170 C60 170 70 130 80 100" stroke="#2D6A4F" strokeWidth="2" strokeLinecap="round" opacity="0.35" />
-                <ellipse cx="50" cy="130" rx="16" ry="8" fill="#74A97A" opacity="0.20" transform="rotate(-50 50 130)" />
-                <ellipse cx="66" cy="112" rx="14" ry="7" fill="#2D6A4F" opacity="0.18" transform="rotate(-30 66 112)" />
-                {/* Berries */}
-                <circle cx="140" cy="75" r="7" fill="#C1440E" opacity="0.20" />
-                <circle cx="152" cy="82" r="5" fill="#C1440E" opacity="0.16" />
-                <circle cx="145" cy="88" r="6" fill="#C1440E" opacity="0.14" />
-              </svg>
+          {/* Right: staggered recipe photos */}
+          <div className="relative hidden lg:flex items-center justify-center h-[420px]">
+            {/* Top-left circle */}
+            <div className="absolute top-0 left-8 w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-float">
+              <img
+                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop"
+                alt="Healthy bowl recipe"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Center-right circle (largest) */}
+            <div className="absolute top-16 right-4 w-56 h-56 rounded-full overflow-hidden border-4 border-white shadow-float">
+              <img
+                src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop"
+                alt="Pizza recipe"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Bottom-left circle */}
+            <div className="absolute bottom-0 left-24 w-44 h-44 rounded-full overflow-hidden border-4 border-white shadow-float">
+              <img
+                src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=400&fit=crop"
+                alt="Pancakes recipe"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             {/* Floating budget card */}
-            <div className="absolute bottom-10 -left-8 bg-white rounded-2xl shadow-float px-5 py-4 flex items-center gap-4 border border-parchment">
+            <div className="absolute bottom-9 right-6 bg-white rounded-2xl shadow-float px-5 py-4 flex items-center gap-4 border border-parchment">
               <div className="w-10 h-10 bg-forest-pale rounded-xl flex items-center justify-center">
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="#2D6A4F" strokeWidth="2" strokeLinecap="round">
                   <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -262,7 +261,7 @@ export default function Home() {
             </div>
 
             {/* Floating recipe count badge */}
-            <div className="absolute top-8 -right-4 bg-forest text-white rounded-2xl shadow-float px-4 py-3">
+            <div className="absolute top-4 -right-2 bg-forest text-white rounded-2xl shadow-float px-4 py-3">
               <p className="font-sans text-xs opacity-80">Recipes extracted</p>
               <p className="font-serif text-lg font-bold">3 videos</p>
             </div>
