@@ -6,6 +6,15 @@ interface UrlInputProps {
   disabled?: boolean;
 }
 
+function VideoIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 shrink-0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="16" height="12" rx="2" />
+      <path d="M8 7.5l4 2.5-4 2.5V7.5z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export default function UrlInput({ urls, onChange, disabled }: UrlInputProps) {
   const addUrl = () => {
     if (urls.length < 5) onChange([...urls, ""]);
@@ -22,27 +31,32 @@ export default function UrlInput({ urls, onChange, disabled }: UrlInputProps) {
   };
 
   return (
-    <div className="mb-6">
-      <label className="block text-bark font-sans text-sm font-semibold mb-2 tracking-wide uppercase">
-        Recipe Videos
+    <div className="mb-8">
+      <label className="block font-sans text-xs font-bold text-forest uppercase tracking-widest mb-3">
+        Recipe videos
       </label>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {urls.map((url, i) => (
-          <div key={i} className="flex gap-2">
-            <input
-              type="url"
-              placeholder="Paste a TikTok or Instagram Reel URL"
-              value={url}
-              onChange={(e) => updateUrl(i, e.target.value)}
-              disabled={disabled}
-              className="flex-1 px-4 py-3 bg-white border-2 border-parchment rounded-lg font-sans text-sm text-bark placeholder:text-bark/30 focus:outline-none focus:border-forest transition-colors disabled:opacity-50"
-            />
+          <div key={i} className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bark-muted pointer-events-none">
+                <VideoIcon />
+              </span>
+              <input
+                type="url"
+                placeholder="Paste a TikTok or Instagram Reel URL"
+                value={url}
+                onChange={(e) => updateUrl(i, e.target.value)}
+                disabled={disabled}
+                className="w-full pl-10 pr-4 py-4 bg-cream border-2 border-parchment rounded-2xl font-sans text-sm text-bark placeholder:text-bark/30 focus:outline-none focus:border-forest transition-colors disabled:opacity-50"
+              />
+            </div>
             {urls.length > 1 && (
               <button
                 onClick={() => removeUrl(i)}
                 disabled={disabled}
-                className="px-3 py-3 text-terra hover:text-terra-light transition-colors disabled:opacity-50"
                 aria-label="Remove URL"
+                className="w-10 h-10 rounded-full bg-terra-pale text-terra hover:bg-terra hover:text-white transition-colors flex items-center justify-center text-sm font-bold disabled:opacity-40 shrink-0"
               >
                 ✕
               </button>
@@ -54,9 +68,10 @@ export default function UrlInput({ urls, onChange, disabled }: UrlInputProps) {
         <button
           onClick={addUrl}
           disabled={disabled}
-          className="mt-3 text-forest hover:text-forest-light font-sans text-sm font-semibold transition-colors disabled:opacity-50"
+          className="mt-4 font-sans text-sm font-semibold text-forest hover:text-forest-dark flex items-center gap-1.5 transition-colors disabled:opacity-40"
         >
-          + Add another recipe
+          <span className="w-5 h-5 bg-forest-pale rounded-full flex items-center justify-center text-forest text-xs font-bold">＋</span>
+          Add another recipe
         </button>
       )}
     </div>

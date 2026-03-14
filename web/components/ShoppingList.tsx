@@ -26,48 +26,88 @@ export default function ShoppingList({ list, budget, onToggleItem }: ShoppingLis
       .filter((item) => !item.checked)
       .map((item) => `${item.quantity} ${item.name} — $${item.estimatedCost.toFixed(2)}`)
       .join("\n");
-    const total = `\nTotal: $${subtotal.toFixed(2)} / $${budget} budget`;
-    navigator.clipboard.writeText(text + total);
+    navigator.clipboard.writeText(text + `\n\nTotal: $${subtotal.toFixed(2)} / $${budget} budget`);
   };
 
+  const checkedCount = list.items.filter((i) => i.checked).length;
+
   return (
-    <div className="bg-white rounded-xl border-2 border-parchment p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-serif text-bark text-xl font-bold">Shopping List</h2>
-        <button
-          onClick={copyList}
-          className="font-sans text-sm text-forest hover:text-forest-light font-semibold transition-colors"
-        >
-          Copy list
-        </button>
+    <div className="space-y-6">
+      {/* Budget status banner */}
+      <div className={`rounded-2xl px-5 py-4 flex items-center justify-between ${
+        overBudget
+          ? "bg-terra-pale border border-terra/20"
+          : "bg-forest-pale border border-forest/15"
+      }`}>
+        <div>
+          <p className={`font-sans text-xs font-bold uppercase tracking-widest mb-0.5 ${overBudget ? "text-terra" : "text-forest"}`}>
+            {overBudget ? "Over budget" : "Looking good"}
+          </p>
+          <p className="font-serif text-lg font-bold text-bark">
+            ${subtotal.toFixed(2)}{" "}
+            <span className="font-sans text-sm font-normal text-bark-muted">
+              of ${budget} budget
+            </span>
+          </p>
+        </div>
+        <div className={`text-right`}>
+          <p className={`font-serif text-2xl font-black ${overBudget ? "text-terra" : "text-forest"}`}>
+            {overBudget ? "-" : "+"}${Math.abs(remaining).toFixed(2)}
+          </p>
+          <p className="font-sans text-xs text-bark-muted">
+            {overBudget ? "over" : "remaining"}
+          </p>
+        </div>
       </div>
 
+      {/* Budget notes */}
       {list.budgetNotes && (
-        <p className={`font-sans text-sm mb-4 px-3 py-2 rounded-lg ${
-          list.overBudget
-            ? "bg-terra/10 text-terra border border-terra/20"
-            : "bg-sage/15 text-forest border border-sage/30"
-        }`}>
+        <p className="font-sans text-sm text-bark-muted bg-cream rounded-2xl px-5 py-4 leading-relaxed border border-parchment">
           {list.budgetNotes}
         </p>
       )}
 
-      <div className="mb-4">
-        {list.items.map((item, i) => (
-          <ListItem key={i} item={item} onToggle={() => onToggleItem(i)} />
-        ))}
-      </div>
-
-      <div className="pt-4 border-t-2 border-parchment space-y-2">
-        <div className="flex justify-between font-sans text-sm text-bark/60">
-          <span>Estimated total</span>
-          <span>${subtotal.toFixed(2)}</span>
+      {/* List card */}
+      <div className="bg-white rounded-2xl border border-parchment shadow-card overflow-hidden">
+        {/* Card header */}
+        <div className="px-6 py-4 border-b border-parchment flex items-center justify-between">
+          <div>
+            <h3 className="font-serif text-lg font-bold text-bark">
+              {list.items.length} items
+            </h3>
+            {checkedCount > 0 && (
+              <p className="font-sans text-xs text-bark-muted">
+                {checkedCount} checked off
+              </p>
+            )}
+          </div>
+          <button
+            onClick={copyList}
+            className="font-sans text-xs font-semibold bg-forest-pale text-forest px-4 py-2 rounded-full hover:bg-forest hover:text-white transition-colors"
+          >
+            Copy list
+          </button>
         </div>
-        <div className={`flex justify-between font-sans text-base font-bold ${
-          overBudget ? "text-terra" : "text-forest"
-        }`}>
-          <span>{overBudget ? "Over budget by" : "Budget remaining"}</span>
-          <span>${Math.abs(remaining).toFixed(2)}</span>
+
+        {/* Items */}
+        <div className="px-6">
+          {list.items.map((item, i) => (
+            <ListItem key={i} item={item} onToggle={() => onToggleItem(i)} />
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-parchment bg-cream/60">
+          <div className="flex justify-between font-sans text-sm text-bark-muted mb-1.5">
+            <span>Estimated total</span>
+            <span>${subtotal.toFixed(2)}</span>
+          </div>
+          <div className={`flex justify-between font-sans text-base font-bold ${
+            overBudget ? "text-terra" : "text-forest"
+          }`}>
+            <span>{overBudget ? "Over budget by" : "Budget remaining"}</span>
+            <span>${Math.abs(remaining).toFixed(2)}</span>
+          </div>
         </div>
       </div>
     </div>
