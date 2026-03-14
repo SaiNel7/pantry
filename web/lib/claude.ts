@@ -5,6 +5,10 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+function stripCodeFences(text: string): string {
+  return text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+}
+
 export async function extractRecipe(
   transcript: string,
   sourceUrl: string
@@ -36,7 +40,8 @@ Return only the JSON, no other text.`,
     ],
   });
 
-  const text = response.content.find((b) => b.type === "text")?.text ?? "";
+  const raw = response.content.find((b) => b.type === "text")?.text ?? "";
+  const text = stripCodeFences(raw);
 
   let parsed: { title: string; ingredients: Ingredient[]; serves?: number; error?: string };
   try {
@@ -110,7 +115,8 @@ Return only the JSON, no other text.`,
     ],
   });
 
-  const text = response.content.find((b) => b.type === "text")?.text ?? "";
+  const raw = response.content.find((b) => b.type === "text")?.text ?? "";
+  const text = stripCodeFences(raw);
 
   let parsed: { items: Omit<ListItem, "checked">[]; totalEstimate: number; overBudget: boolean; budgetNotes: string };
   try {
