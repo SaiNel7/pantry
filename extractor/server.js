@@ -9,33 +9,6 @@ const execFileAsync = promisify(execFile);
 const app = express();
 app.use(express.json());
 
-// Concurrency limiter — whisper is CPU/memory intensive; run one job at a time
-let activeJobs = 0;
-const MAX_CONCURRENT = 1;
-const jobQueue = [];
-
-function acquireSlot() {
-  return new Promise((resolve) => {
-    const tryAcquire = () => {
-      if (activeJobs < MAX_CONCURRENT) {
-        activeJobs++;
-        resolve();
-      } else {
-        jobQueue.push(tryAcquire);
-      }
-    };
-    tryAcquire();
-  });
-}
-
-function releaseSlot() {
-  activeJobs--;
-  if (jobQueue.length > 0) {
-    const next = jobQueue.shift();
-    next();
-  }
-}
-
 // Auth middleware
 app.use((req, res, next) => {
   if (req.path === '/health') return next();
@@ -61,7 +34,6 @@ app.post('/extract', async (req, res) => {
   const audioPath = path.join('/tmp', `${id}.mp3`);
   const transcriptPath = path.join('/tmp', `${id}.txt`);
 
-  await acquireSlot();
   try {
     // Step 1: Download video
     // Use flexible format selection: prefer mp4, fall back to best available (needed for Instagram)
@@ -90,7 +62,7 @@ app.post('/extract', async (req, res) => {
       'whisper-ctranslate2',
       [
         audioPath,
-        '--model', 'base',
+        '--model', 'tiny',
         '--output_format', 'txt',
         '--output_dir', '/tmp',
         '--initial_prompt', 'Cooking recipe video. Ingredients, measurements, and cooking instructions.',
@@ -119,7 +91,6 @@ app.post('/extract', async (req, res) => {
     const message = err.stderr || err.message || 'Pipeline failed';
     res.status(500).json({ error: message });
   } finally {
-    releaseSlot();
     // Cleanup temp files regardless of success or failure
     await Promise.allSettled([
       fs.unlink(videoPath),

@@ -16,7 +16,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN pip install --no-cache-dir yt-dlp whisper-ctranslate2
 
 # Pre-download the whisper base model so it's baked into the image (avoids HF Hub rate limits at runtime)
-RUN python -c "from faster_whisper import WhisperModel; WhisperModel('base', device='cpu', compute_type='int8')"
+RUN python -c "from faster_whisper import WhisperModel; WhisperModel('tiny', device='cpu', compute_type='int8')"
 
 WORKDIR /app
 COPY package.json .
