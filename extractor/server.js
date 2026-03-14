@@ -12,7 +12,7 @@ app.use(express.json());
 // Auth middleware
 app.use((req, res, next) => {
   if (req.path === '/health') return next();
-  const secret = req.headers['x-extractor-secret'];
+  const secret = req.headers['x-secret'];
   if (!secret || secret !== process.env.EXTRACTOR_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
