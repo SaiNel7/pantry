@@ -164,7 +164,7 @@ export default function Home() {
           <div className="flex items-baseline gap-3">
             <span className="font-serif text-2xl font-bold text-forest tracking-tight">Pantry</span>
             <span className="hidden sm:inline font-sans text-xs text-bark-muted">
-              From TikTok to grocery list
+              You save the recipe. We do the rest!
             </span>
           </div>
           <a
@@ -199,7 +199,7 @@ export default function Home() {
               <em className="not-italic text-forest">groceries you can afford.</em>
             </h1>
             <p className="font-sans text-lg text-bark-muted leading-relaxed mb-10 max-w-md">
-              Paste TikTok or Instagram Reel recipe videos. Get a smart,
+              Paste TikTok recipe videos. Get a smart,
               budget-aware grocery list in seconds.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -276,7 +276,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {[
               { step: "01", title: "Set your budget", body: "Tell us how much you want to spend this week on groceries." },
-              { step: "02", title: "Paste video URLs", body: "Drop in up to 5 TikTok or Instagram Reel recipe links." },
+              { step: "02", title: "Paste video URLs", body: "Drop in up to 5 TikTok recipe links." },
               { step: "03", title: "Get your list", body: "We extract every ingredient and build a consolidated, budget-smart list." },
             ].map(({ step, title, body }) => (
               <div key={step} className="flex gap-5">

@@ -23,6 +23,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Write Instagram cookies to disk once at startup if provided
+const COOKIES_PATH = '/tmp/instagram_cookies.txt';
+if (process.env.INSTAGRAM_COOKIES) {
+  fs.writeFile(COOKIES_PATH, process.env.INSTAGRAM_COOKIES).catch(() => {});
+}
+
 app.post('/extract', async (req, res) => {
   const { url } = req.body;
   if (!url || typeof url !== 'string' || !url.trim()) {
@@ -37,11 +43,11 @@ app.post('/extract', async (req, res) => {
   try {
     // Step 1: Download video
     // Use flexible format selection: prefer mp4, fall back to best available (needed for Instagram)
-    await execFileAsync(
-      'yt-dlp',
-      ['--output', videoPath, '--format', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4/best', '--merge-output-format', 'mp4', url],
-      { timeout: 30000 }
-    );
+    const ytdlpArgs = ['--output', videoPath, '--format', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4/best', '--merge-output-format', 'mp4'];
+    if (process.env.INSTAGRAM_COOKIES) ytdlpArgs.push('--cookies', COOKIES_PATH);
+    ytdlpArgs.push(url);
+
+    await execFileAsync('yt-dlp', ytdlpArgs, { timeout: 30000 });
 
     // Step 2: Extract audio
     await execFileAsync(

@@ -20,6 +20,8 @@ export default function UrlInput({ urls, onChange, disabled }: UrlInputProps) {
     if (urls.length < 5) onChange([...urls, ""]);
   };
 
+  const isInstagram = (url: string) => url.includes("instagram.com");
+
   const updateUrl = (index: number, value: string) => {
     const updated = [...urls];
     updated[index] = value;
@@ -37,19 +39,24 @@ export default function UrlInput({ urls, onChange, disabled }: UrlInputProps) {
       </label>
       <div className="space-y-3">
         {urls.map((url, i) => (
-          <div key={i} className="flex items-center gap-2">
+          <div key={i} className={`flex items-center gap-2 ${isInstagram(url) ? "mb-6" : ""}`}>
             <div className="relative flex-1">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bark-muted pointer-events-none">
                 <VideoIcon />
               </span>
               <input
                 type="url"
-                placeholder="Paste a TikTok or Instagram Reel URL"
+                placeholder="Paste a TikTok URL"
                 value={url}
                 onChange={(e) => updateUrl(i, e.target.value)}
                 disabled={disabled}
-                className="w-full pl-10 pr-4 py-4 bg-cream border-2 border-parchment rounded-2xl font-sans text-sm text-bark placeholder:text-bark/30 focus:outline-none focus:border-forest transition-colors disabled:opacity-50"
+                className={`w-full pl-10 pr-4 py-4 bg-cream border-2 rounded-2xl font-sans text-sm text-bark placeholder:text-bark/30 focus:outline-none transition-colors disabled:opacity-50 ${isInstagram(url) ? "border-terra focus:border-terra" : "border-parchment focus:border-forest"}`}
               />
+              {isInstagram(url) && (
+                <p className="absolute -bottom-5 left-1 font-sans text-xs text-terra">
+                  Instagram not supported yet — TikTok only
+                </p>
+              )}
             </div>
             {urls.length > 1 && (
               <button
