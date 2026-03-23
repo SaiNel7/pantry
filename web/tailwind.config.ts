@@ -23,10 +23,19 @@ const config: Config = {
         "sage-light": "#A8CBA0",
         "sage-pale": "#EDF5EE",
         parchment: "#E8E2D4",
+        // Dark theme (MISE)
+        void: "#000000",
+        surface: "#1a1a1a",
+        "surface-2": "#242424",
+        "surface-3": "#2e2e2e",
+        muted: "#6b6b6b",
+        "muted-2": "#4a4a4a",
+        orange: "#E8572A",
+        "orange-dim": "#b8441f",
       },
       fontFamily: {
-        serif: ['"Playfair Display"', "Georgia", "serif"],
-        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        serif: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Display"', '"SF Pro Text"', "system-ui", "sans-serif"],
+        sans: ["-apple-system", "BlinkMacSystemFont", '"SF Pro Display"', '"SF Pro Text"', "system-ui", "sans-serif"],
       },
       borderRadius: {
         "4xl": "2rem",

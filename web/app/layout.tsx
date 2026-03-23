@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pantry — Recipe to Grocery List",
-  description: "Turn TikTok and Instagram Reel recipes into a smart grocery list that fits your budget.",
+  title: "MISE — What's the move tonight?",
+  description: "Student-friendly meal suggestions by effort level, with a built-in grocery list.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-cream">{children}</body>
+      <body className="min-h-screen bg-black">{children}</body>
     </html>
   );
 }
