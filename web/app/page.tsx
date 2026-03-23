@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Recipe } from "@/types";
 import EffortTabs from "@/components/EffortTabs";
@@ -11,6 +11,14 @@ import { getRecipesByEffort } from "@/lib/recipes";
 type EffortLevel = 'low' | 'med' | 'high';
 
 export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+function HomeContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab") as EffortLevel | null;
   const [effort, setEffort] = useState<EffortLevel>(
@@ -83,7 +91,7 @@ export default function Home() {
         {/* Header */}
         <div className="mb-8">
           <p className="font-sans text-xs font-bold text-orange uppercase tracking-widest mb-2">Pantry</p>
-            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What's the move </h1>
+            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What&apos;s the move</h1>
             <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]">tonight?</h1>
         </div>
 

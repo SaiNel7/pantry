@@ -35,13 +35,11 @@ export async function getRecipesByIds(ids: string[]): Promise<Recipe[]> {
 }
 
 export async function updateRecipeEffort(id: string, effort_level: 'low' | 'med' | 'high'): Promise<void> {
-  const { error, count } = await supabase
+  const { error } = await supabase
     .from("recipes")
     .update({ effort_level })
-    .eq("id", id)
-    .select("id", { count: "exact", head: true });
+    .eq("id", id);
   if (error) throw new Error(error.message);
-  if (count === 0) throw new Error("Update blocked — check Supabase RLS policies");
 }
 
 export async function deleteRecipe(id: string): Promise<void> {
