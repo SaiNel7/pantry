@@ -101,14 +101,14 @@ function HomeContent() {
         </div>
 
         {/* Recipe cards */}
-        <div className="flex flex-col gap-4">
-          {loading ? (
+        <div className={`flex flex-col gap-4 transition-opacity duration-150 ${loading ? "opacity-40 pointer-events-none" : "opacity-100"}`}>
+          {loading && recipes.length === 0 ? (
             <>
               {[0, 1].map((i) => (
                 <div key={i} className="rounded-3xl bg-surface aspect-[4/3] animate-pulse" />
               ))}
             </>
-          ) : recipes.length === 0 ? (
+          ) : !loading && recipes.length === 0 ? (
             <div className="text-center py-16">
               <p className="font-sans text-muted text-sm">No recipes yet.</p>
               <button
