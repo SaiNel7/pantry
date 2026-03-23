@@ -143,6 +143,18 @@ function HomeContent() {
             <span className="font-sans text-sm font-semibold">Add from TikTok</span>
           </button>
         )}
+
+        {/* Community note */}
+        <div className="mt-4 flex items-start gap-2 px-1">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-[2px]">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p className="font-sans text-[11px] text-[#444] leading-relaxed">
+            This is a shared pantry for Cornell students — anyone can add recipes they want to cook.
+          </p>
+        </div>
       </div>
 
       {/* Add recipe modal */}

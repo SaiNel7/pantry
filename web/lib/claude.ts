@@ -13,6 +13,23 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const status = (err as { status?: number }).status;
+      if (status === 529 && i < retries - 1) {
+        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+        continue;
+      }
+      if (status === 529) throw new Error("Claude is currently overloaded. Please try again in a moment.");
+      throw err;
+    }
+  }
+  throw new Error("Unreachable");
+}
+
 function stripCodeFences(text: string): string {
   return text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
 }
@@ -76,7 +93,7 @@ export async function extractRichRecipe(
   transcript: string,
   sourceUrl: string
 ): Promise<RichExtractedRecipe> {
-  const response = await client.messages.create({
+  const response = await withRetry(() => client.messages.create({
     model: "claude-opus-4-6",
     max_tokens: 3000,
     messages: [
@@ -123,7 +140,7 @@ If no recipe is detectable, return: { "error": "No recipe found" }
 Return only the JSON, no other text.`,
       },
     ],
-  });
+  }));
 
   const raw = response.content.find((b) => b.type === "text")?.text ?? "";
   const text = stripCodeFences(raw);

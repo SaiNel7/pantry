@@ -5,7 +5,23 @@ import { saveRecipe } from "@/lib/recipes";
 
 export const maxDuration = 60;
 
+// Simple in-memory rate limit: 5 requests per IP per hour
+const ipLog = new Map<string, number[]>();
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const window = 60 * 60 * 1000;
+  const hits = (ipLog.get(ip) ?? []).filter((t) => now - t < window);
+  hits.push(now);
+  ipLog.set(ip, hits);
+  return hits.length > 5;
+}
+
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: "Too many requests — try again later." }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const { url, effort_level } = body as { url?: string; effort_level?: string };
