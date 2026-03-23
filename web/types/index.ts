@@ -6,6 +6,8 @@ export interface Ingredient {
   swapSuggestion?: string;
 }
 
+export type DietaryTag = 'vegan' | 'vegetarian' | 'gluten-free' | 'halal' | 'kosher' | 'dairy-free' | 'nut-free';
+
 export interface Recipe {
   id: string;
   title: string;
@@ -17,6 +19,7 @@ export interface Recipe {
   ingredients: Ingredient[];
   steps: string[];
   source_url: string | null;
+  dietary_tags: DietaryTag[];
   created_at: string;
 }
 

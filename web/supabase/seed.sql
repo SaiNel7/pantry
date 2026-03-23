@@ -1,6 +1,34 @@
 -- MISE: Recipe table schema + seed data
 -- Run this in your Supabase project's SQL editor
 
+-- Migration: add dietary_tags column (safe to run on existing table)
+alter table recipes add column if not exists dietary_tags text[] not null default '{}';
+
+-- Backfill tags for seeded recipes (run after migration)
+-- Pesto Tortellini: vegetarian, halal, kosher — NOT nut-free (pesto has pine nuts), NOT dairy-free (cheese/parmesan), NOT gluten-free (pasta)
+update recipes set dietary_tags = array['vegetarian', 'halal', 'kosher']
+  where title = 'Pesto Tortellini';
+
+-- Ramen Upgrade: dairy-free, nut-free — NOT halal/kosher (pork in most instant ramen seasoning), NOT gluten-free (wheat noodles + soy sauce), NOT vegetarian (animal-derived seasoning)
+update recipes set dietary_tags = array['dairy-free', 'nut-free']
+  where title = 'Ramen Upgrade';
+
+-- Veggie Stir Fry: vegan, vegetarian, halal, kosher, dairy-free, nut-free — NOT gluten-free (soy sauce has wheat)
+update recipes set dietary_tags = array['vegan', 'vegetarian', 'halal', 'kosher', 'dairy-free', 'nut-free']
+  where title = 'Veggie Stir Fry';
+
+-- Pasta Aglio e Olio: vegetarian, halal, kosher, nut-free — NOT vegan (parmesan), NOT dairy-free (parmesan), NOT gluten-free (spaghetti)
+update recipes set dietary_tags = array['vegetarian', 'halal', 'kosher', 'nut-free']
+  where title = 'Pasta Aglio e Olio';
+
+-- Garlic Butter Shrimp Pasta: nut-free only — NOT halal (white wine), NOT kosher (shellfish), NOT dairy-free (butter), NOT vegetarian (shrimp), NOT gluten-free (pasta)
+update recipes set dietary_tags = array['nut-free']
+  where title = 'Garlic Butter Shrimp Pasta';
+
+-- Sheet Pan Chicken Thighs: gluten-free, dairy-free, nut-free — NOT halal/kosher (can't verify meat sourcing), NOT vegetarian/vegan
+update recipes set dietary_tags = array['gluten-free', 'dairy-free', 'nut-free']
+  where title = 'Sheet Pan Chicken Thighs';
+
 create table if not exists recipes (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -177,4 +205,186 @@ insert into recipes (title, tagline, effort_level, cook_time_minutes, cost_per_s
     "Roast another 15-20 minutes until chicken skin is crispy and potatoes are tender.",
     "Rest 5 minutes before serving."
   ]'::jsonb
+);
+
+-- Additional LOW effort recipes
+insert into recipes (title, tagline, effort_level, cook_time_minutes, cost_per_serving, ingredients, steps, dietary_tags) values
+(
+  'Avocado Toast',
+  'Millennial classic. Still hits.',
+  'low',
+  8,
+  2.50,
+  '[
+    {"name": "Sourdough bread", "quantity": "2 slices"},
+    {"name": "Avocado", "quantity": "1 ripe"},
+    {"name": "Egg", "quantity": "1"},
+    {"name": "Lemon juice", "quantity": "1 tsp"},
+    {"name": "Red pepper flakes", "quantity": "pinch"},
+    {"name": "Olive oil", "quantity": "1 tsp"},
+    {"name": "Salt and pepper", "quantity": "to taste"}
+  ]'::jsonb,
+  '[
+    "Toast the bread until golden.",
+    "While bread toasts, fry the egg in olive oil over medium heat to your liking.",
+    "Halve and pit the avocado. Scoop into a bowl and mash with lemon juice, salt, and pepper.",
+    "Spread avocado on toast. Top with the fried egg and a pinch of red pepper flakes."
+  ]'::jsonb,
+  array['vegetarian', 'halal', 'kosher', 'dairy-free', 'nut-free']
+  -- NOT vegan (egg), NOT gluten-free (bread)
+),
+(
+  'Grilled Cheese',
+  'Comfort food, no explanation needed.',
+  'low',
+  8,
+  1.50,
+  '[
+    {"name": "White or sourdough bread", "quantity": "2 slices"},
+    {"name": "Cheddar cheese", "quantity": "2–3 slices"},
+    {"name": "Butter", "quantity": "1 tbsp, softened"}
+  ]'::jsonb,
+  '[
+    "Butter one side of each bread slice.",
+    "Heat a pan over medium-low. Place one slice butter-side down.",
+    "Layer cheese on top, then place second slice butter-side up.",
+    "Cook 3–4 min until golden, then flip and cook another 2–3 min.",
+    "Let rest 1 min before cutting."
+  ]'::jsonb,
+  array['vegetarian', 'halal', 'kosher', 'nut-free']
+  -- NOT vegan, NOT dairy-free (butter, cheese), NOT gluten-free (bread)
+),
+(
+  'Spicy Peanut Noodles',
+  'Takeout flavor, zero delivery fee.',
+  'low',
+  12,
+  2.75,
+  '[
+    {"name": "Instant ramen or soba noodles", "quantity": "1 serving (about 85g)"},
+    {"name": "Peanut butter", "quantity": "2 tbsp", "flag": "swap", "swapSuggestion": "tahini for nut-free version"},
+    {"name": "Soy sauce", "quantity": "1 tbsp"},
+    {"name": "Rice vinegar", "quantity": "1 tsp"},
+    {"name": "Chili oil or sriracha", "quantity": "1 tsp"},
+    {"name": "Garlic", "quantity": "1 clove, minced"},
+    {"name": "Sugar", "quantity": "½ tsp"},
+    {"name": "Cucumber", "quantity": "¼, thinly sliced"},
+    {"name": "Green onion", "quantity": "2 stalks, sliced"},
+    {"name": "Sesame seeds", "quantity": "1 tsp", "flag": "optional"}
+  ]'::jsonb,
+  '[
+    "Cook noodles according to package. Drain and rinse with cold water.",
+    "Whisk together peanut butter, soy sauce, rice vinegar, chili oil, garlic, and sugar. Thin with 1–2 tbsp warm water until saucy.",
+    "Toss noodles in the sauce until fully coated.",
+    "Top with cucumber, green onion, and sesame seeds."
+  ]'::jsonb,
+  array['vegan', 'vegetarian', 'halal', 'kosher', 'dairy-free']
+  -- NOT nut-free (peanut butter), NOT gluten-free (noodles + soy sauce)
+),
+(
+  'White Bean & Spinach Skillet',
+  'Protein-packed. One pan. Done in 10.',
+  'low',
+  10,
+  3.25,
+  '[
+    {"name": "Canned cannellini beans", "quantity": "1 can (15oz), drained"},
+    {"name": "Baby spinach", "quantity": "2 big handfuls"},
+    {"name": "Garlic", "quantity": "3 cloves, sliced"},
+    {"name": "Olive oil", "quantity": "2 tbsp"},
+    {"name": "Lemon", "quantity": "½, juiced"},
+    {"name": "Red pepper flakes", "quantity": "¼ tsp"},
+    {"name": "Parmesan", "quantity": "2 tbsp, grated", "flag": "optional"},
+    {"name": "Salt and pepper", "quantity": "to taste"}
+  ]'::jsonb,
+  '[
+    "Heat olive oil in a pan over medium heat. Add garlic and red pepper flakes, cook 1 min until fragrant.",
+    "Add beans. Season with salt and pepper. Cook 3–4 min, lightly mashing some beans with the back of your spoon.",
+    "Add spinach in batches, stirring until wilted.",
+    "Squeeze lemon over everything and toss.",
+    "Plate and top with parmesan if using."
+  ]'::jsonb,
+  array['vegetarian', 'gluten-free', 'halal', 'kosher', 'nut-free']
+  -- NOT vegan (parmesan — optional but included), NOT dairy-free (parmesan)
+),
+(
+  'Caprese Salad',
+  'No cooking required. Somehow still impressive.',
+  'low',
+  5,
+  4.50,
+  '[
+    {"name": "Fresh mozzarella", "quantity": "4oz, sliced"},
+    {"name": "Tomatoes", "quantity": "2 medium, sliced"},
+    {"name": "Fresh basil", "quantity": "handful of leaves"},
+    {"name": "Olive oil", "quantity": "2 tbsp, good quality"},
+    {"name": "Balsamic glaze", "quantity": "1 tbsp", "flag": "optional"},
+    {"name": "Salt and pepper", "quantity": "to taste"}
+  ]'::jsonb,
+  '[
+    "Slice mozzarella and tomatoes to roughly the same thickness.",
+    "Alternate and overlap tomato, mozzarella, and basil leaves on a plate.",
+    "Drizzle generously with olive oil and balsamic glaze if using.",
+    "Season with flaky salt and cracked pepper. Serve immediately."
+  ]'::jsonb,
+  array['vegetarian', 'gluten-free', 'halal', 'kosher', 'nut-free']
+  -- NOT vegan (mozzarella), NOT dairy-free (mozzarella)
+);
+
+-- Additional MED effort recipes
+insert into recipes (title, tagline, effort_level, cook_time_minutes, cost_per_serving, ingredients, steps, dietary_tags) values
+(
+  'Egg Fried Rice',
+  'Leftover rice''s glow-up.',
+  'med',
+  20,
+  3.00,
+  '[
+    {"name": "Day-old cooked rice", "quantity": "2 cups"},
+    {"name": "Eggs", "quantity": "2"},
+    {"name": "Frozen peas and carrots", "quantity": "½ cup"},
+    {"name": "Green onion", "quantity": "3 stalks, sliced"},
+    {"name": "Garlic", "quantity": "2 cloves, minced"},
+    {"name": "Soy sauce", "quantity": "2 tbsp"},
+    {"name": "Sesame oil", "quantity": "1 tsp"},
+    {"name": "Vegetable oil", "quantity": "2 tbsp"}
+  ]'::jsonb,
+  '[
+    "Heat vegetable oil in a large pan or wok over high heat.",
+    "Add garlic and frozen vegetables. Stir fry 2 minutes.",
+    "Push everything to the side. Crack eggs into the pan and scramble.",
+    "Add rice, breaking up any clumps. Stir fry everything together 3–4 min.",
+    "Pour in soy sauce and sesame oil. Toss to coat.",
+    "Top with green onion and serve."
+  ]'::jsonb,
+  array['vegetarian', 'halal', 'kosher', 'dairy-free', 'nut-free']
+  -- NOT vegan (eggs), NOT gluten-free (soy sauce has wheat)
+),
+(
+  'Shakshuka',
+  'Eggs in sauce. Better than it sounds.',
+  'med',
+  25,
+  4.00,
+  '[
+    {"name": "Canned crushed tomatoes", "quantity": "1 can (14oz)"},
+    {"name": "Eggs", "quantity": "4"},
+    {"name": "Bell pepper", "quantity": "1, diced"},
+    {"name": "Onion", "quantity": "½, diced"},
+    {"name": "Garlic", "quantity": "3 cloves, minced"},
+    {"name": "Cumin", "quantity": "1 tsp"},
+    {"name": "Paprika", "quantity": "1 tsp"},
+    {"name": "Olive oil", "quantity": "2 tbsp"},
+    {"name": "Feta", "quantity": "2 tbsp, crumbled", "notes": "optional topping", "flag": "optional"}
+  ]'::jsonb,
+  '[
+    "Heat olive oil in a skillet over medium heat. Add onion and bell pepper, cook 5 min until soft.",
+    "Add garlic, cumin, and paprika. Cook 1 min until fragrant.",
+    "Pour in tomatoes. Season with salt and simmer 10 min.",
+    "Make 4 wells in the sauce with a spoon. Crack an egg into each well.",
+    "Cover and cook 5–7 min until whites are set but yolks are still runny.",
+    "Top with feta if using. Serve with bread or eat straight from the pan."
+  ]'::jsonb,
+  array['vegetarian', 'halal', 'kosher', 'gluten-free', 'nut-free']
+  -- NOT vegan (eggs, optional feta), NOT dairy-free (feta — but feta is optional; dish base is dairy-free. Leaving dairy-free off to be safe.)
 );

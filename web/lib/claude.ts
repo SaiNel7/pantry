@@ -6,6 +6,7 @@ export interface RichExtractedRecipe extends ExtractedRecipe {
   effort_level: 'low' | 'med' | 'high';
   cook_time_minutes: number;
   cost_per_serving: number;
+  dietary_tags: string[];
   steps: string[];
 }
 
@@ -105,12 +106,22 @@ Return a JSON object with this exact shape:
   "effort_level": "low" | "med" | "high",
   "cook_time_minutes": 15,
   "cost_per_serving": 4.50,
+  "dietary_tags": ["vegan", "gluten-free"],
   "ingredients": [
     { "name": "ingredient name", "quantity": "amount + unit", "notes": "optional prep notes", "flag": "swap" | "optional" | null, "swapSuggestion": "cheaper alternative (only if flag is swap, else omit)" }
   ],
   "steps": ["Step 1.", "Step 2."],
   "serves": 2
 }
+
+Dietary tag guide (only include tags that fully apply — when in doubt, omit):
+- "vegan": no animal products whatsoever
+- "vegetarian": no meat/fish but may contain dairy/eggs
+- "gluten-free": no wheat, barley, rye, or gluten-containing ingredients
+- "halal": no pork or alcohol; meat must be halal
+- "kosher": follows kosher dietary laws (no pork, shellfish, no mixing meat/dairy)
+- "dairy-free": no milk, cheese, butter, cream, or dairy derivatives
+- "nut-free": no tree nuts or peanuts
 
 Ingredient flag guide:
 - "swap": exotic, expensive, or single-use — include swapSuggestion
@@ -146,6 +157,7 @@ ${transcript}
     effort_level: 'low' | 'med' | 'high';
     cook_time_minutes: number;
     cost_per_serving: number;
+    dietary_tags: string[];
     ingredients: Ingredient[];
     steps: string[];
     serves?: number;
@@ -168,6 +180,7 @@ ${transcript}
     effort_level: parsed.effort_level ?? "med",
     cook_time_minutes: parsed.cook_time_minutes ?? 20,
     cost_per_serving: parsed.cost_per_serving ?? 5,
+    dietary_tags: parsed.dietary_tags ?? [],
     ingredients: parsed.ingredients ?? [],
     steps: parsed.steps ?? [],
     serves: parsed.serves,

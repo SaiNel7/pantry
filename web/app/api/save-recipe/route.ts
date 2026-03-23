@@ -43,6 +43,7 @@ export async function POST(req: Request) {
       ingredients: rich.ingredients,
       steps: rich.steps,
       source_url: url,
+      dietary_tags: rich.dietary_tags,
     });
 
     return NextResponse.json(recipe);

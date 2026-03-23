@@ -2,13 +2,23 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import type { Recipe } from "@/types";
+import type { Recipe, DietaryTag } from "@/types";
 import EffortTabs from "@/components/EffortTabs";
 import MealCard from "@/components/MealCard";
 import BottomNav from "@/components/BottomNav";
 import { getRecipesByEffort } from "@/lib/recipes";
 
 type EffortLevel = 'low' | 'med' | 'high';
+
+const DIETARY_OPTIONS: { tag: DietaryTag; label: string }[] = [
+  { tag: 'vegan', label: 'Vegan' },
+  { tag: 'vegetarian', label: 'Vegetarian' },
+  { tag: 'gluten-free', label: 'Gluten-free' },
+  { tag: 'halal', label: 'Halal' },
+  { tag: 'kosher', label: 'Kosher' },
+  { tag: 'dairy-free', label: 'Dairy-free' },
+  { tag: 'nut-free', label: 'Nut-free' },
+];
 
 export default function Home() {
   return (
@@ -26,6 +36,24 @@ function HomeContent() {
   );
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dietaryFilters, setDietaryFilters] = useState<DietaryTag[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("dietary_filters");
+    if (stored) setDietaryFilters(JSON.parse(stored));
+  }, []);
+
+  const toggleFilter = (tag: DietaryTag) => {
+    setDietaryFilters((prev) => {
+      const next = prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag];
+      localStorage.setItem("dietary_filters", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const visibleRecipes = dietaryFilters.length === 0
+    ? recipes
+    : recipes.filter((r) => dietaryFilters.every((t) => (r.dietary_tags ?? []).includes(t)));
 
   // TikTok add flow
   const [showAdd, setShowAdd] = useState(false);
@@ -91,13 +119,33 @@ function HomeContent() {
         {/* Header */}
         <div className="mb-8">
           <p className="font-sans text-xs font-bold text-orange uppercase tracking-widest mb-2">Pantry</p>
-            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What&apos;s the move</h1>
+            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What we cooking</h1>
             <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]">tonight?</h1>
         </div>
 
         {/* Effort tabs */}
-        <div className="mb-6">
+        <div className="mb-4">
           <EffortTabs value={effort} onChange={handleTabChange} />
+        </div>
+
+        {/* Dietary filter chips */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {DIETARY_OPTIONS.map(({ tag, label }) => {
+            const active = dietaryFilters.includes(tag);
+            return (
+              <button
+                key={tag}
+                onClick={() => toggleFilter(tag)}
+                className={`font-sans text-xs px-3 py-1 rounded-full border transition-colors ${
+                  active
+                    ? "bg-orange border-orange text-white"
+                    : "bg-transparent border-[#2a2a2a] text-[#555] hover:text-[#888]"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Recipe cards */}
@@ -118,13 +166,15 @@ function HomeContent() {
                 Add one from TikTok →
               </button>
             </div>
+          ) : !loading && visibleRecipes.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="font-sans text-muted text-sm">No recipes match your dietary filters.</p>
+            </div>
           ) : (
-            recipes.map((recipe) => (
+            visibleRecipes.map((recipe) => (
               <MealCard
                 key={recipe.id}
                 recipe={recipe}
-                onDelete={(id) => setRecipes((prev) => prev.filter((r) => r.id !== id))}
-                onMove={(id) => setRecipes((prev) => prev.filter((r) => r.id !== id))}
               />
             ))
           )}
@@ -152,7 +202,7 @@ function HomeContent() {
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <p className="font-sans text-[11px] text-[#444] leading-relaxed">
-            This is a shared pantry for Cornell students — anyone can add recipes they want to cook.
+            This is a shared recipebook for Cornell students. See what your peers are cooking. Make your own grocery lists.
           </p>
         </div>
       </div>
