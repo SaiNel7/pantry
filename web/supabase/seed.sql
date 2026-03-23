@@ -29,6 +29,18 @@ update recipes set dietary_tags = array['nut-free']
 update recipes set dietary_tags = array['gluten-free', 'dairy-free', 'nut-free']
   where title = 'Sheet Pan Chicken Thighs';
 
+-- Page views tracking
+create table if not exists page_views (
+  id bigint generated always as identity primary key,
+  path text not null default '/',
+  visitor_id text,
+  created_at timestamptz not null default now()
+);
+
+alter table page_views enable row level security;
+create policy "Public insert" on page_views for insert with check (true);
+grant insert on table public.page_views to anon, authenticated;
+
 create table if not exists recipes (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -329,6 +341,32 @@ insert into recipes (title, tagline, effort_level, cook_time_minutes, cost_per_s
   ]'::jsonb,
   array['vegetarian', 'gluten-free', 'halal', 'kosher', 'nut-free']
   -- NOT vegan (mozzarella), NOT dairy-free (mozzarella)
+),
+(
+  'Hot Honey Cheese Fried Eggs',
+  'Sweet. Spicy. Cheesy. Don''t skip the crispy edges.',
+  'low',
+  8,
+  2.25,
+  '[
+    {"name": "Eggs", "quantity": "2"},
+    {"name": "Shredded mozzarella or cheddar", "quantity": "¼ cup"},
+    {"name": "Butter", "quantity": "1 tbsp"},
+    {"name": "Hot honey", "quantity": "1–2 tsp", "flag": "swap", "swapSuggestion": "regular honey + pinch of red pepper flakes"},
+    {"name": "Red pepper flakes", "quantity": "pinch"},
+    {"name": "Flaky salt", "quantity": "pinch"},
+    {"name": "Toast", "quantity": "1–2 slices", "flag": "optional"}
+  ]'::jsonb,
+  '[
+    "Melt butter in a small pan over medium heat until foamy.",
+    "Crack in the eggs. Immediately scatter cheese around the whites (not the yolks).",
+    "Cover with a lid and cook 2–3 min until whites are set and cheese is melted and crispy at the edges.",
+    "Slide onto a plate or straight onto toast.",
+    "Drizzle hot honey over the yolks, hit with red pepper flakes and flaky salt."
+  ]'::jsonb,
+  array['vegetarian', 'gluten-free', 'halal', 'kosher', 'nut-free']
+  -- NOT vegan, NOT dairy-free (butter, cheese)
+  -- gluten-free as a dish — toast is optional
 );
 
 -- Additional MED effort recipes

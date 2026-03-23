@@ -40,6 +40,21 @@ function HomeContent() {
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
+    // Get or create a persistent visitor UUID
+    const match = document.cookie.match(/mise_vid=([^;]+)/);
+    let vid = match?.[1];
+    if (!vid) {
+      vid = crypto.randomUUID();
+      document.cookie = `mise_vid=${vid}; max-age=31536000; path=/`;
+    }
+    fetch("/api/view", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: "/", visitor_id: vid }),
+    });
+  }, []);
+
+  useEffect(() => {
     const seen = document.cookie.includes("mise_seen=1");
     if (!seen) {
       setShowWelcome(true);
