@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractTranscript } from "@/lib/extractor";
 import { extractRichRecipe } from "@/lib/claude";
 import { saveRecipe } from "@/lib/recipes";
+import type { DietaryTag } from "@/types";
 
 export const maxDuration = 60;
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
       ingredients: rich.ingredients,
       steps: rich.steps,
       source_url: url,
-      dietary_tags: rich.dietary_tags,
+      dietary_tags: rich.dietary_tags as DietaryTag[],
     });
 
     return NextResponse.json(recipe);
