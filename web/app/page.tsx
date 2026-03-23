@@ -37,6 +37,17 @@ function HomeContent() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [dietaryFilters, setDietaryFilters] = useState<DietaryTag[]>([]);
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    const seen = document.cookie.includes("mise_seen=1");
+    if (!seen) {
+      setShowWelcome(true);
+      document.cookie = "mise_seen=1; max-age=31536000; path=/";
+    }
+  }, []);
+
+  const dismissWelcome = () => setShowWelcome(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("dietary_filters");
@@ -249,6 +260,29 @@ function HomeContent() {
       )}
 
       <BottomNav />
+
+      {/* Welcome sheet */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={dismissWelcome} />
+          <div className="relative w-full max-w-[390px] bg-[#111] rounded-t-3xl px-6 pt-6 pb-10">
+            <div className="w-8 h-1 bg-[#333] rounded-full mx-auto mb-6" />
+            <p className="font-sans text-xs font-bold text-orange uppercase tracking-widest mb-3">Welcome</p>
+            <h2 className="font-sans text-2xl font-bold text-white leading-snug mb-3">
+              A recipebook built for Cornell students.
+            </h2>
+            <p className="font-sans text-sm text-[#666] leading-relaxed mb-8">
+              See what your peers are cooking. Add recipes from TikTok. Build your own grocery lists.
+            </p>
+            <button
+              onClick={dismissWelcome}
+              className="w-full py-4 bg-orange text-white font-sans font-semibold text-sm rounded-2xl"
+            >
+              Let&apos;s cook
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
