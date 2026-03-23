@@ -246,8 +246,30 @@ function HomeContent() {
               placeholder="https://www.tiktok.com/@..."
               value={addUrl}
               onChange={(e) => setAddUrl(e.target.value)}
-              className="w-full bg-[#1c1c1c] border border-[#2a2a2a] text-white font-sans text-sm rounded-xl px-4 py-3 mb-4 placeholder:text-[#444] outline-none focus:border-orange transition-colors"
+              className={`w-full bg-[#1c1c1c] border text-white font-sans text-sm rounded-xl px-4 py-3 mb-1 placeholder:text-[#444] outline-none transition-colors ${
+                addUrl.trim() && !addUrl.includes("tiktok.com")
+                  ? "border-orange"
+                  : "border-[#2a2a2a] focus:border-orange"
+              }`}
             />
+
+            <div className="mb-4 mt-1">
+              {addUrl.trim() && !addUrl.includes("tiktok.com") && (
+                <p className="font-sans text-xs text-orange">Only TikTok links are supported.</p>
+              )}
+            </div>
+
+            {/* How it works note */}
+            <div className="flex items-start gap-2 bg-[#1a1a1a] rounded-xl px-3 py-3 mb-4">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-[1px]">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p className="font-sans text-[11px] text-[#555] leading-relaxed">
+                We extract recipes by transcribing the audio and reading the caption. Videos without narration or a written recipe in the caption won&apos;t work YET. Working on it!
+              </p>
+            </div>
 
             <p className="font-sans text-xs text-muted mb-2 uppercase tracking-widest">Effort level</p>
             <div className="mb-5">
@@ -260,7 +282,7 @@ function HomeContent() {
 
             <button
               onClick={handleAddRecipe}
-              disabled={addLoading || !addUrl.trim()}
+              disabled={addLoading || !addUrl.trim() || !addUrl.includes("tiktok.com")}
               className="w-full py-4 bg-orange text-white font-sans font-semibold text-sm rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
             >
               {addLoading ? (
