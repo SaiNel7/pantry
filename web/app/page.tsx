@@ -7,6 +7,7 @@ import EffortTabs from "@/components/EffortTabs";
 import MealCard from "@/components/MealCard";
 import BottomNav from "@/components/BottomNav";
 import { getRecipesByEffort } from "@/lib/recipes";
+import { GradientText } from "@/components/ui/gradient-text";
 
 type EffortLevel = 'low' | 'med' | 'high';
 
@@ -145,7 +146,7 @@ function HomeContent() {
         {/* Header */}
         <div className="mb-8">
           <p className="font-sans text-xs font-bold text-orange uppercase tracking-widest mb-2">Pantry</p>
-            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What we cooking</h1>
+            <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]"> What we <GradientText>cooking</GradientText></h1>
             <h1 className="font-sans text-[2rem] font-bold text-white leading-[1.1]">tonight?</h1>
         </div>
 
